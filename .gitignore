@@ -2,9 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+keys.txt
+archive_keys
 # C extensions
 *.so
+.idea
 
 # Distribution / packaging
 .Python
