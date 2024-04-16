@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import random
+import sys
 
 import nekoton as nt
 
@@ -12,11 +13,11 @@ logger = logging.getLogger()
 # source account private key (just random acc)
 PRIVATE_KEY = '9f2f8f3472fffba608710f5bbbd4d260ee5f771c7a20fe3be73a1ae603801d36'
 
-# destination token address, USDT
-TO_TOKEN = nt.Address('0:8a4ed4483500caf2d4bb4b56c84df41009cc3d0ed6a9de05d853e26a30faeced')
+# source token address, USDT
+FROM_TOKEN = nt.Address('0:8a4ed4483500caf2d4bb4b56c84df41009cc3d0ed6a9de05d853e26a30faeced')
 
-# 0.1 venom
-TRADE_AMOUNT = nt.Tokens('0.1')
+# 1 USDT
+TRADE_AMOUNT = 1 * 10**6
 
 async def main():
     transport = nt.JrpcTransport(endpoint="https://jrpc.venom.foundation")
@@ -32,15 +33,17 @@ async def main():
         return
     venom_balance = state.balance
 
+    token_balance = await get_token_balance(wallet.address, FROM_TOKEN, transport)
+
     call_id = random.randint(0, 2**32)
     tx_data = get_swap_payload(
         call_id,
+        FROM_TOKEN,
         WVENOM_ADDR,
-        TO_TOKEN,
         int(TRADE_AMOUNT),
         wallet.address,
         int(venom_balance),
-        0
+        token_balance
     )
 
     tx = await wallet.send(**tx_data)
@@ -52,7 +55,7 @@ async def main():
     logger.info(f"Transaction finalized")
 
     # get token balance
-    token_balance = await get_token_balance(wallet.address, TO_TOKEN, transport)
+    token_balance = await get_token_balance(wallet.address, FROM_TOKEN, transport)
     logger.info(f"Account token balance: {token_balance}")
 
 asyncio.run(main())

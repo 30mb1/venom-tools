@@ -79,7 +79,7 @@ def get_swap_payload(
         "id": id,
         "nativeBalance": str(native_balance),
         "nativeInfo": native_info,
-        "account": str(account),
+        "recipient": str(account),
         "tokenBalance": str(token_balance)
     }
     res = requests.post('https://api.web3.world/v2/pools/cross_swap_payload', json=data).json()
